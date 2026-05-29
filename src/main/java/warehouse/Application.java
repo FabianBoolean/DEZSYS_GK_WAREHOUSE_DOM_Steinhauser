@@ -30,6 +30,11 @@ public class Application implements CommandLineRunner {
 		repository.save(new ProductData("1","01-926885","Ariel Waschmittel Color","Waschmittel", 478));
 		repository.save(new ProductData("1","02-234811","Mampfi Katzenfutter Rind","Tierfutter", 1324));
 		repository.save(new ProductData("2","03-893173","Saugstauberbeutel Ingres","Reinigung", 7390));
+		repository.save(new ProductData("2", "04-111111", "Coca Cola 1L", "Getraenk", 1200.0));
+		repository.save(new ProductData("2", "04-222222", "Fanta Orange 1L", "Getraenk", 950.0));
+		repository.save(new ProductData("1", "05-333333", "Persil Universal", "Waschmittel", 300.0));
+		repository.save(new ProductData("2", "05-444444", "Felix Katzenfutter Huhn", "Tierfutter", 850.0));
+		repository.save(new ProductData("1", "06-555555", "Whiskas Katzenfutter Lachs", "Tierfutter", 670.0));
 		System.out.println();
 
 		// fetch all products
