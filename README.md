@@ -1,174 +1,330 @@
-# Middleware Engineering "Document Oriented Middleware using MongoDB" - Taskdescription
-GIT repository: [https://github.com/ThomasMicheler/DEZSYS_GK_WAREHOUSE_DOM.git](https://github.com/ThomasMicheler/DEZSYS_GK_WAREHOUSE_DOM.git)
+# GK8.2 Document Oriented Middleware using MongoDB
 
-## Einführung
+**Name:** Fabian Steinhauser
 
-Diese Übung soll helfen die Funktionsweise und Einsatzmöglichkeiten eines dokumentenorientierten dezentralen Systems mit Hilfe des Frameworks Spring Data MongoDB oder einem Framework Ihrer Wahl zu demonstrieren. Die Daten werden in dieser Übung in einem NoSQL Repository gespeichert und verarbeitet.
+**Repository:** https://github.com/FabianBoolean/DEZSYS_GK_WAREHOUSE_DOM_Steinhauser
 
-Es handelt sich um ein Lagerstandort Beispiel, wie in Aufgabe "GK8.1 Spring Data and ORM". Die Daten aller Lagerstandorte sollen in der Zentrale persistiert und in einer NoSQL Datenbank gespeichert werden. Von hier aus koennen die Daten fuer verschiedene Fragestellungen des Betriebes (Management, Einkauf, Vertrieb,...) abgefragt werden.
+---
 
-## 1.1 Ziele
+# Einleitung
 
-Das Ziel dieser Übung ist die Implementierung einer dokumentenorientierten Middleware, die die Daten aller Warenlager zentral in einem entsprechenden Format ablegt.
+Ziel dieser Übung war die Umsetzung einer dokumentenorientierten Middleware mit MongoDB. Die Daten werden über REST-Schnittstellen empfangen und zentral in einer MongoDB-Datenbank gespeichert.
 
-## 1.2 Voraussetzungen
+Für die Implementierung wurde Spring Boot mit Spring Data MongoDB verwendet. Die Produktdaten werden als JSON-Dokumente gespeichert und können sowohl über REST-Endpunkte als auch über die Mongo Shell abgefragt werden.
 
-* Grundlagen zu JSON & REST
-* Grundlagen Architektur von verteilten Systemen
-* Grundlagen Spring Framework, Spring Boot oae.
-* Grundlagen NoSQL
-* Installation MongoDB
-* Datenstruktur basierend auf der Aufgabenstellung "GK8.1 Spring Data and ORM"
-* Umsetzung eines einfachen Web-Userinterfaces zur Anzeige von Daten
+---
 
+# Installation und Start
 
-## 1.3 Aufgabenstellung
+## MongoDB Container starten
 
-Implementieren Sie eine dokumentenorientierte Middleware mit Hilfe von MongoDB, dass Daten über eine REST Schnittstellen empfängt und die Daten des Lagerstandortes in einer MongoDB Datenbank im JSON Format abspeichert. Entwerfen Sie eine geeignet Datenstruktur, um eine kontinuierliche Speicherung der Daten zu gewährleisten.
+```bash
+docker run -d --name mongo -p 27017:27017 mongo
+```
 
-Es sollen dabei folgende REST-Funktionen implementiert werden:  
+## Anwendung starten
 
-* POST /warehouse: fügt einen neuen Lagerstandort hinzu. 
-* GET /warehouse: abrufen aller Lagerstandorte und deren Lagerbestand  
-* GET /warehouse/{id}: abrufen eines Lagerstandortes id und dessen Lagerbestand  
-* DELETE /warehouse/{id}: löschen eines Lagerstandortes id   
+```bash
+./gradlew bootRun
+```
 
-* POST /product: fügt ein neues Produkt und dessen Lagerbestand zu einem Lagerstandort hinzu
-* GET /product: abrufen aller Produkte/Lagerbestand und deren Lagerstandort
-* GET /product/{id}: abrufen eines Produktes id und dessen Lagerstandorte
-* DELETE /product/{id}: löschen eines Produktes id auf einem Lagerstandort
+Die Anwendung läuft anschließend unter:
 
-Das Format und in welchen Zeitabständen die Daten eintreffen wird von Ihnen, als System Architekt, spezifiziert und implementiert.
+```text
+http://localhost:8080
+```
 
-Die Daten werden in der Zentrale in einem MongoDB Repository gespeichert und können hier zu Kontrollzwecken abgerufen werden (mongo Shell).
+---
 
-## 1.4 Demo Applikation
+# Verwendete Datenstruktur
 
-* Download Docker for MongoDB  
-  `docker pull mongo`  
+Jedes Produkt wird als eigenes Dokument in MongoDB gespeichert.
 
-* Run Docker for MongoDB (using port 27017, name mongo)  
-  `docker run -d -p 27017:27017 --name mongo mongo`  
+Beispiel:
 
-* Run MongoShell on Docker Instance  
-  `docker exec -it mongo bash`  
-  `mongosh`  
+```json
+{
+  "warehouseID": "1",
+  "productID": "00-443175",
+  "productName": "Bio Orangensaft Sonne",
+  "productCategory": "Getraenk",
+  "productQuantity": 2500
+}
+```
 
-* Execute MongoShell Commands    
-  `show dbs`  
-  `use local`   
-  `db.startup_log.countDocuments();`    
+## Felder
 
-* Accessing Data with MongoDB and Spring  
-  - Build and Run Example  
-	  `gradle clean bootRun`  
+| Feld | Beschreibung |
+|--------|--------|
+| warehouseID | Lagerstandort |
+| productID | Produktnummer |
+| productName | Name des Produktes |
+| productCategory | Produktkategorie |
+| productQuantity | Lagerbestand |
 
-  - Check Data in MongoDB.  
-    `docker exec -it mongo bash`
-    `mongosh`
-    `use test`
-    `db.warehouseData.find()`  
+Diese Struktur ermöglicht die Speicherung mehrerer Lagerstandorte und beliebig vieler Produkte.
 
-## 1.5 Bewertung  
+---
 
-*   Gruppengrösse: 1 Person
-*   Abgabemodus: per Protokoll und Abgabespraech
-*   Grundlagen Anforderungen **"Grundlagen"**
-    * Installation und Konfiguration einer dokumentenorientierten Middleware mit einem Framework Ihrer Wahl und MongoDB
-    * Entwurf und Umsetzung einer entsprechenden JSON Datenstruktur
-    * Speicherung der Daten von nur einem Lagerstandort
-    * Speicherung der Daten in einer MongoDB Datenbank in der Zentrale
-        - mindestens 10 Produkte in 3 Produktkategorien
-    * REST API:
-        - POST /product, GET /product, GET /warehouse
-    * Beantwortung der Fragestellungen   
-    * 5 CRUD Operationen über Mongo Shell
-      Dokumentieren Sie den Mongo Shell Befehl und dessen Ergebnis.
-      Beispiel: ein Produkt hinzufügen, ein Produkt löschen, ein Produkt ändern, ...
-*   Erweiterte Anforderungen **"Erweiterte Grundlagen"**
-    * Erweiterung der Datenstruktur, sodass ein Speicherung der Daten von mehreren Lagerstandorten möglich ist.
-    * REST API: Implementierung der gesamten Schnittstelle, wie in der Angabe beschrieben
-    * Implementieren Sie eine kleine Applikation, dass die Daten generiert und über das REST-Interfaces dieser Übung abspeichert.
-      Dabei werden sowohl Produkte, als auch Lagerstandorte abgelegt.
-*   Erweiterte Anforderungen **"Vertiefung"**
-    * Generieren Testdaten für das Berichtswesen: mind. 300 Produkte in 6 Produktkategorien, 5 Warenhaeuser   
-    * Formulierung 3 sinnvoller Fragestellungen für das Berichtswesen in der Zentrale und deren Abfragen in einer Mongo Shell.
-      Beispiel:
-      Wie ist der Lagerbestand von einem Produkt X über alle Lagerstandorte?
-      Welche Produkte haben einen Lagerbestand von unter 10 Stück über alle Lagerstandorte?
-    * Implementieren Sie eine Schnittstelle zu einer AI Instanz (lokal Ollama, cloud-basiert Gemini), um die Daten zu übertragen und lassen Sie sich zu den 3 Fragestellungen einen Bericht / Grafik von der AI entwerfen. Dokumentieren Sie hier die Anfragen, die Ihre Applikation an die AI Instanz sendet.
+# Implementierte REST-Schnittstellen
 
-## 1.6 Fragestellung für Protokoll
+## Produkte abrufen
 
-+ Nennen Sie 4 Vorteile eines NoSQL Repository im Gegensatz zu einem relationalen DBMS
-+ Nennen Sie 4 Nachteile eines NoSQL Repository im Gegensatz zu einem relationalen DBMS
-+ Welche Schwierigkeiten ergeben sich bei der Zusammenführung der Daten?
-+ Welche Arten von NoSQL Datenbanken gibt es?
-+ Nennen Sie einen Vertreter für jede Art?
-+ Beschreiben Sie die Abkürzungen CA, CP und AP in Bezug auf das CAP Theorem
-+ Mit welchem Befehl koennen Sie den Lagerstand eines Produktes aller Lagerstandorte anzeigen.
-+ Mit welchem Befehl koennen Sie den Lagerstand eines Produktes eines bestimmten Lagerstandortes anzeigen.
+```bash
+curl http://localhost:8080/product
+```
 
-## 1.7 Links und Dokumente
-* [Was bedeutet NoSQL](https://www.oracle.com/at/database/nosql/what-is-nosql)
-* [Accessing Data with MongoDB](https://spring.io/guides/gs/accessing-data-mongodb/)
-* [MongoDB Installation](https://docs.mongodb.com/manual/administration/install-community/)
-* [mongo Shell Quick Reference](https://docs.mongodb.com/manual/reference/mongo-shell/)
-* [mongo Shell Query Reference](https://www.mongodb.com/docs/manual/tutorial/query-embedded-documents/)
-* [Grundlagen Spring Framework](https://spring.io/)
-* [Spring Boot](https://spring.io/guides/gs/spring-boot/)
-* [Spring Data MongoDB](https://spring.io/projects/spring-data-mongodb)
-* [Spring RESTful Web Service](https://spring.io/guides/gs/rest-service/#use-maven)
-* NoSQL Introduction
-  - [NoSQL on w3resource](https://www.w3resource.com/mongodb/nosql.php)  
-  - [Introduction to NoSQL Database](https://www.edureka.co/blog/introduction-to-nosql-database/)  
-  - [NoSQL im Überblick](https://www.heise.de/ct/artikel/NoSQL-im-Ueberblick-1012483.html)  
-  - [Introduction to NoSQL Databases on YouTube ](https://www.youtube.com/watch?v=2yQ9TGFpDuM)  
+Liefert alle gespeicherten Produkte.
 
+---
 
-## 1.8 Mongo Shell Abfragen  
-  
-Link to [Mongo Shell Query and Projection Operators](https://docs.mongodb.com/manual/reference/operator/query/)
+## Einzelnes Produkt abrufen
 
-Den Demo-Abfragen liegt folgende Datenstruktur zu Grunde:   
-   `{  `  
-   `    warehouseID: '1',   `   
-   `    warehouseName: 'Linz Bahnhof',   `   
-   `   timestamp: '2022-01-02 01:00:00',   `   
-   `    warehousePostalCode: 4010,`    
-   `   warehouseCity: 'Linz',`   
-   `   warehouseCountrz: 'Austria',`   
-   `   productData: [`  
-   `      { productID: '00-443175', productName: 'Bio Orangensaft Sonne', productQuantity: 2500 },`    
-   `      { productID: '00-871895', productName: 'Bio Apfelsaft Gold', productQuantity: 3420 },`    
-   `      { productID: '01-926885', productName: 'Ariel Waschmittel Color', productQuantity: 478 },`     
-   `   ]`   
-    `}`
-  
-* Filtern nach dem Lagerstandort 1    
-`db.productData.find( { 
-	"warehouseID": "1"
-} )`
+```bash
+curl http://localhost:8080/product/00-871895
+```
 
+Liefert ein bestimmtes Produkt anhand der Produkt-ID.
 
-* Filtern nach Lagerstandort 1 und dem Produkt mit dem Namen "Bio Apfelsaft Gold"  
-`db.productData.find( { 
-	"warehouseID": "1",
-        "productName": "Bio Apfelsaft Gold"
-} )`
+---
 
-* Filtern nach allen Produkten, die einen Lagerbestand unter 500 Stueck haben.  
-`db.productData.find( { 
-	"productQuantity": { $lte: 500 }
-} )`
+## Neues Produkt anlegen
 
-* Filtern nach Lagerstandort 1 und einem Lagerbestand unter 500 Stueck haben.  
-`db.productData.find( { 
-    "warehouseID": "1",
-    "productQuantity": { $lte: 500 }
-} )`
+```bash
+curl -X POST http://localhost:8080/product \
+-H "Content-Type: application/json" \
+-d '{
+  "warehouseID":"1",
+  "productID":"07-777777",
+  "productName":"Testprodukt Schokolade",
+  "productCategory":"Suesswaren",
+  "productQuantity":123
+}'
+```
 
-* Filtern nach allen Produkten der Produktkategorien.  
-`db.productData.find( { 
-     productCategory: { $in: [ "Waschmittel", "Getraenk" ] } 
-} )`
+---
+
+## Produkt löschen
+
+```bash
+curl -X DELETE http://localhost:8080/product/07-777777
+```
+
+---
+
+## Alle Lagerstandorte abrufen
+
+```bash
+curl http://localhost:8080/warehouse
+```
+
+---
+
+## Produkte eines Lagerstandortes abrufen
+
+```bash
+curl http://localhost:8080/warehouse/1
+```
+
+---
+
+# Testdaten
+
+Für die Demonstration wurden insgesamt 10 Produkte gespeichert.
+
+Verwendete Kategorien:
+
+- Getraenk
+- Waschmittel
+- Tierfutter
+- Reinigung
+
+Verwendete Lagerstandorte:
+
+- Lager 1
+- Lager 2
+
+---
+
+# Mongo Shell CRUD Operationen
+
+## 1. READ
+
+Alle Produkte anzeigen:
+
+```javascript
+db.productData.find()
+```
+
+---
+
+## 2. CREATE
+
+Neues Testprodukt anlegen:
+
+```javascript
+db.productData.insertOne({
+  warehouseID: "1",
+  productID: "99-999999",
+  productName: "Mongo Testprodukt",
+  productCategory: "Test",
+  productQuantity: 111
+})
+```
+
+Kontrolle:
+
+```javascript
+db.productData.find({
+  productID: "99-999999"
+})
+```
+
+---
+
+## 3. UPDATE
+
+Bestand ändern:
+
+```javascript
+db.productData.updateOne(
+  { productID: "99-999999" },
+  { $set: { productQuantity: 222 } }
+)
+```
+
+Kontrolle:
+
+```javascript
+db.productData.find({
+  productID: "99-999999"
+})
+```
+
+Ergebnis:
+
+```text
+productQuantity: 222
+```
+
+---
+
+## 4. FILTER
+
+Produkte mit Lagerbestand kleiner oder gleich 500:
+
+```javascript
+db.productData.find({
+  productQuantity: { $lte: 500 }
+})
+```
+
+---
+
+## 5. DELETE
+
+Testprodukt löschen:
+
+```javascript
+db.productData.deleteOne({
+  productID: "99-999999"
+})
+```
+
+Kontrolle:
+
+```javascript
+db.productData.find({
+  productID: "99-999999"
+})
+```
+
+Ergebnis:
+
+```text
+kein Dokument gefunden
+```
+
+---
+
+# Beantwortung der Fragestellungen
+
+## 1. Vorteile von NoSQL
+
+- Flexibles Schema
+- Hohe Skalierbarkeit
+- Gute Performance bei großen Datenmengen
+- Speicherung komplexer JSON-Dokumente
+
+## 2. Nachteile von NoSQL
+
+- Kein standardisiertes SQL
+- Teilweise schwächere Konsistenzmodelle
+- Datenredundanz möglich
+- Beziehungen schwieriger abzubilden
+
+## 3. Schwierigkeiten bei der Zusammenführung von Daten
+
+- Unterschiedliche Datenformate
+- Unterschiedliche ID-Systeme
+- Datenkonflikte
+- Synchronisationsprobleme
+
+## 4. Arten von NoSQL-Datenbanken
+
+- Dokumentenorientierte Datenbanken
+- Key-Value-Datenbanken
+- Spaltenorientierte Datenbanken
+- Graphdatenbanken
+
+## 5. Vertreter der einzelnen Typen
+
+| Typ | Vertreter |
+|------|------|
+| Dokumentenorientiert | MongoDB |
+| Key-Value | Redis |
+| Spaltenorientiert | Apache Cassandra |
+| Graphdatenbank | Neo4j |
+
+## 6. CAP-Theorem
+
+### CA
+
+Konsistenz und Verfügbarkeit, jedoch keine Partitionstoleranz.
+
+### CP
+
+Konsistenz und Partitionstoleranz, jedoch eingeschränkte Verfügbarkeit bei Netzwerkproblemen.
+
+### AP
+
+Verfügbarkeit und Partitionstoleranz, dafür kurzfristig eventuell inkonsistente Daten.
+
+## 7. Lagerstand eines Produktes über alle Lagerstandorte
+
+```javascript
+db.productData.find({
+  productID: "00-443175"
+})
+```
+
+## 8. Lagerstand eines Produktes eines bestimmten Lagerstandortes
+
+```javascript
+db.productData.find({
+  warehouseID: "1",
+  productID: "00-443175"
+})
+```
+
+---
+
+# Quellen
+
+- https://spring.io/projects/spring-data-mongodb
+- https://spring.io/guides/gs/accessing-data-mongodb
+- https://www.mongodb.com/docs/manual
+- https://www.mongodb.com/docs/mongodb-shell
+- https://spring.io/projects/spring-boot
+- https://spring.io/guides/gs/rest-service
+- https://www.oracle.com/at/database/nosql/what-is-nosql
